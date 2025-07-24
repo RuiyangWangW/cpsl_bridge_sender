@@ -6,35 +6,56 @@ import struct
 from rclpy.serialization import serialize_message
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
+
 class LaserSender(Node):
     def __init__(self):
         super().__init__('laser_tcp_sender')
+
+        # Set the topic you want to send
+        self.topic_name = '/cpsl_uav_1/livox/scan'
+
         qos_profile = QoSProfile(
-            reliability=ReliabilityPolicy.BEST_EFFORT,  # Match publisher
+            reliability=ReliabilityPolicy.BEST_EFFORT,  # Match receiver QoS if needed
             history=HistoryPolicy.KEEP_LAST,
             depth=10
-        )            
+        )
+
+        # Create the subscriber to the LaserScan topic
         self.subscription = self.create_subscription(
             LaserScan,
-            '/livox/scan_best_effort',
+            self.topic_name,
             self.laser_callback,
-            qos_profile)
-        
+            qos_profile
+        )
+
+        # Connect to the receiver (replace IP if needed)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(('192.168.0.64', 9001))  # Replace with PC IP and port
+        self.sock.connect(('10.197.79.58', 9001))  # Replace with receiver IP
+        self.get_logger().info(f"Connected to receiver at 10.197.79.58:9001")
 
     def laser_callback(self, msg):
         try:
-            data = serialize_message(msg)
-            # Prefix message with 4-byte length header
-            self.sock.sendall(struct.pack('>I', len(data)) + data)
+            msg_bytes = serialize_message(msg)
+            topic_bytes = self.topic_name.encode('utf-8')
+
+            # Format:
+            # [topic_len][topic_name][msg_len][serialized msg]
+            packet = (
+                struct.pack('>I', len(topic_bytes)) + topic_bytes +
+                struct.pack('>I', len(msg_bytes)) + msg_bytes
+            )
+
+            self.sock.sendall(packet)
         except Exception as e:
             self.get_logger().error(f"Failed to send laser scan: {e}")
+
 
 def main(args=None):
     rclpy.init(args=args)
     node = LaserSender()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(node)
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 

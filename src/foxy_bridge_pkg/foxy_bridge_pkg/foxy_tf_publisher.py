@@ -9,7 +9,7 @@ class TfSender(Node):
     def __init__(self):
         super().__init__('tf_tcp_sender')
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(('192.168.0.64', 9002))  # Change to PC IP and port
+        self.sock.connect(('10.197.79.58', 9002))  # Change to PC IP and port
 
         self.tf_sub = self.create_subscription(
             TFMessage,
