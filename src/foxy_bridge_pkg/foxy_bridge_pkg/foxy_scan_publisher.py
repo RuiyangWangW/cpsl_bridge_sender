@@ -12,8 +12,8 @@ class LaserSender(Node):
         super().__init__('laser_tcp_sender')
 
         # Set the topic you want to send
-        self.topic_name = '/cpsl_uav_1/livox/scan'
-
+        self.topic_name = '/livox/scan_best_effort'
+        
         qos_profile = QoSProfile(
             reliability=ReliabilityPolicy.BEST_EFFORT,  # Match receiver QoS if needed
             history=HistoryPolicy.KEEP_LAST,
@@ -30,8 +30,8 @@ class LaserSender(Node):
 
         # Connect to the receiver (replace IP if needed)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(('10.197.79.58', 9001))  # Replace with receiver IP
-        self.get_logger().info(f"Connected to receiver at 10.197.79.58:9001")
+        self.sock.connect(('192.168.0.64', 9001))  # Replace with receiver IP
+        self.get_logger().info(f"Connected to receiver at 192.168.0.64:9001")
 
     def laser_callback(self, msg):
         try:
