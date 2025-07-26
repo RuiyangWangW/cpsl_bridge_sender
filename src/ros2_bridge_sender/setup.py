@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'foxy_bridge_pkg'
+package_name = 'ros2_sender_pkg'
 
 setup(
     name=package_name,
@@ -19,8 +19,8 @@ setup(
     license='MIT',
     entry_points={
         'console_scripts': [
-            'foxy_scan_publisher = foxy_bridge_pkg.foxy_scan_publisher:main',
-            'foxy_tf_publisher = foxy_bridge_pkg.foxy_tf_publisher:main'
+            'scan_sender = ros2_sender_pkg.scan_sender:main',
+            'tf_sender = ros2_sender_pkg.tf_sender:main'
         ],
     },
 )
