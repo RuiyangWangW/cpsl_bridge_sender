@@ -10,6 +10,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        ('share/ros2_sender_pkg/launch', ['launch/robot_sender.launch', 'launch/center_sender.launch']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -20,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'scan_sender = ros2_sender_pkg.scan_sender:main',
-            'tf_sender = ros2_sender_pkg.tf_sender:main'
+            'tf_sender = ros2_sender_pkg.tf_sender:main',
+            'map_sender = ros2_sender_pkg.map_sender:main'
         ],
     },
 )
