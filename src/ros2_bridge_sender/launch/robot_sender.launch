@@ -14,5 +14,11 @@ def generate_launch_description():
             executable='tf_sender',
             name='tf_sender',
             output='screen'
+        ),
+        Node(
+            package='ros2_sender_pkg',
+            executable='exec_summary_sender'
+            name='exec_summary_sender',
+            output='screen'
         )
     ])

@@ -22,7 +22,9 @@ setup(
         'console_scripts': [
             'scan_sender = ros2_sender_pkg.scan_sender:main',
             'tf_sender = ros2_sender_pkg.tf_sender:main',
-            'map_sender = ros2_sender_pkg.map_sender:main'
+            'map_sender = ros2_sender_pkg.map_sender:main',
+            'waypoint_sender = ros2_sender_pkg.waypoint_sender:main',
+            'exec_summary_sender = ros2_sender_pkg.exec_summary_sender:main'
         ],
     },
 )
