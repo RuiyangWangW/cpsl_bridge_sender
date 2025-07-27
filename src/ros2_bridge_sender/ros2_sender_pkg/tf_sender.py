@@ -13,15 +13,20 @@ class TfSender(Node):
 
         # Map of (parent, child) frame pairs -> (IP, port)
         self.pair_to_ip = {
-            ('odom', 'base_link'): ('192.168.0.64', 9002),
-            ('map', 'base_footprint'): ('192.168.0.101', 9002),
+            ('map', 'cpsl_uav_1/odom'): ('10.197.10.145', 9002),
+            ('map', 'cpsl_robot_dog_1/odom'): ('10.197.10.145', 9002),
             # Add more pairs as needed
         }
 
-        # Add tf_prefix per receiver if needed (optional)
-        self.pair_to_prefix = {
-            ('odom', 'base_link'): '/cpsl_robot_dog_1',
-            ('map', 'base_footprint'): '/cpsl_uav_1',
+        self.pair_to_replace = {
+            ('map', 'cpsl_uav_1/odom'): {
+                'frame_id': 'map',
+                'child_frame_id': 'cpsl_uav_1/odom'
+            },
+            ('map', 'cpsl_robot_dog_1/odom'): {
+                'frame_id': 'map',
+                'child_frame_id': 'odom'
+            }
         }
 
         self.sockets = {}
@@ -52,7 +57,7 @@ class TfSender(Node):
                 self.get_logger().info(f"Connected to {(ip, port)}")
             except Exception as e:
                 self.get_logger().error(f"Failed to connect to {(ip, port)}: {e}")
-
+    
     def tf_callback(self, msg):
         try:
             # Group transforms by destination (ip, port)
@@ -62,10 +67,14 @@ class TfSender(Node):
                 key = (t.header.frame_id, t.child_frame_id)
                 if key in self.pair_to_ip:
                     dest = self.pair_to_ip[key]
-                    prefix = self.pair_to_prefix.get(key, '')
-                    # Add prefix
-                    t.header.frame_id = f"{prefix}/{t.header.frame_id}"
-                    t.child_frame_id = f"{prefix}/{t.child_frame_id}"
+                    replace = self.pair_to_replace.get(key, {})
+
+                    # Replace frame_id and/or child_frame_id if specified
+                    if 'frame_id' in replace:
+                        t.header.frame_id = replace['frame_id']
+                    if 'child_frame_id' in replace:
+                        t.child_frame_id = replace['child_frame_id']
+
                     group_by_dest[dest].append(t)
 
             for dest, transform_list in group_by_dest.items():
@@ -84,6 +93,7 @@ class TfSender(Node):
 
         except Exception as e:
             self.get_logger().error(f"TF send failed: {e}")
+
 
 
 def main(args=None):
