@@ -11,6 +11,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/ros2_sender_pkg/launch', ['launch/robot_sender.launch', 'launch/center_sender.launch']),
+        ('share/' + package_name + '/config', ['config/robot_sender.yaml', 'config/center_sender.yaml']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

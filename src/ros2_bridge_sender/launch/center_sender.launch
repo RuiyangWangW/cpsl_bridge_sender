@@ -1,24 +1,35 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
+from launch.substitutions import PathJoinSubstitution
+from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
+    config_path = PathJoinSubstitution([
+        FindPackageShare('ros2_sender_pkg'),
+        'config',
+        'center_sender.yaml'
+    ])
+
     return LaunchDescription([
         Node(
             package='ros2_sender_pkg',
             executable='map_sender',
             name='map_sender',
-            output='screen'
+            output='screen',
+            parameters=[config_path]
         ),
         Node(
             package='ros2_sender_pkg',
             executable='tf_sender',
             name='tf_sender',
-            output='screen'
+            output='screen',
+            parameters=[config_path]
         ),
         Node(
             package='ros2_sender_pkg',
             executable='waypoint_sender',
             name='waypoint_sender',
-            output='screen'
-        )
+            output='screen',
+            parameters=[config_path]
+        ),
     ])

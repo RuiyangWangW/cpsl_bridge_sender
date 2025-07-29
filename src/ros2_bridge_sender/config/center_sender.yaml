@@ -1,0 +1,24 @@
+tf_sender:
+  ros__parameters:
+    pair_to_ip:
+      "['map','cpsl_uav_1/odom']": "10.197.117.67"
+      "['map','cpsl_robot_dog_1/odom']": "10.197.10.145"
+    pair_to_replace:
+      "['map','cpsl_uav_1/odom']":
+        frame_id: "map"
+        child_frame_id: "cpsl_uav_1/odom"
+      "['map','cpsl_robot_dog_1/odom']":
+        frame_id: "map"
+        child_frame_id: "odom"
+
+waypoint_sender:
+  ros__parameters:
+    robot_id_to_ip:
+      cpsl_uav_1: "10.197.117.67"
+      cpsl_robot_dog_1: "10.197.10.145"
+
+map_tcp_sender:
+  ros__parameters:
+    target_ips:
+      - "10.197.117.67"
+      - "10.197.10.145"

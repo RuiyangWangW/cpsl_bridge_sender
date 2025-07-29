@@ -9,26 +9,29 @@ from collections import defaultdict
 
 class TfSender(Node):
     def __init__(self):
-        super().__init__('tf_tcp_sender')
+        super().__init__(
+            'tf_sender',
+            allow_undeclared_parameters=True,
+            automatically_declare_parameters_from_overrides=True
+        )
+        self.pair_to_ip = {}
+        for param_name, param in self._parameters.items():
+            if param_name.startswith('pair_to_ip.'):
+                key = param_name.replace('pair_to_ip.', '')
+                self.pair_to_ip[key] = param.value
 
-        # Map of (parent, child) frame pairs -> (IP, port)
-        self.pair_to_ip = {
-            ('map', 'cpsl_uav_1/odom'): ('10.197.10.145', 9002),
-            ('map', 'cpsl_robot_dog_1/odom'): ('10.197.10.145', 9002),
-            # Add more pairs as needed
-        }
+        self.pair_to_replace = {}
+        for param_name, param in self._parameters.items():
+            if param_name.startswith('pair_to_replace.'):
+                key = param_name.replace('pair_to_replace.', '')
+                if key not in self.pair_to_replace:
+                    self.pair_to_replace[key] = {}
+                if 'frame_id' in param_name:
+                    self.pair_to_replace[key]['frame_id'] = param.value
+                elif 'child_frame_id' in param_name:
+                    self.pair_to_replace[key]['child_frame_id'] = param.value
 
-        self.pair_to_replace = {
-            ('map', 'cpsl_uav_1/odom'): {
-                'frame_id': 'map',
-                'child_frame_id': 'cpsl_uav_1/odom'
-            },
-            ('map', 'cpsl_robot_dog_1/odom'): {
-                'frame_id': 'map',
-                'child_frame_id': 'odom'
-            }
-        }
-
+        self.port=9002
         self.sockets = {}
         self.connect_sockets()
 
@@ -49,7 +52,8 @@ class TfSender(Node):
     def connect_sockets(self):
         """Create and store one socket per unique IP."""
         unique_ips = set(self.pair_to_ip.values())
-        for ip, port in unique_ips:
+        for ip in unique_ips:
+            port = self.port
             try:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock.connect((ip, port))

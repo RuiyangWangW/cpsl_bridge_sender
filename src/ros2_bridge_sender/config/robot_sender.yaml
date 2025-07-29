@@ -1,0 +1,25 @@
+tf_sender:
+  ros__parameters:
+    pair_to_ip:
+      "['cpsl_uav_1/odom','cpsl_uav_1/base_link']": "10.197.117.67"
+      "[''cpsl_uav_1/odom'',''cpsl_uav_1/base_footprint']": "10.197.117.67"
+
+#    pair_to_replace:
+#      "['map','cpsl_uav_1/odom']":
+#        frame_id: "map"
+#        child_frame_id: "cpsl_uav_1/odom"
+#      "['map','cpsl_robot_dog_1/odom']":
+#        frame_id: "map"
+#        child_frame_id: "odom"
+
+scan_sender:
+  ros__parameters:
+    topic_name: '/livox/scan_best_effort'
+    target_ip: "10.197.117.67"
+
+exec_summary_sender:
+  ros__parameters:
+    robot_id:
+      - "cpsl_uav_1"
+    target_ip:
+      - "10.197.117.67"

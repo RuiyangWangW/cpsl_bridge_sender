@@ -10,13 +10,16 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
 class ExecutionSummarySender(Node):
     def __init__(self):
-        super().__init__('execution_summary_tcp_sender')
+        super().__init__(
+            'exec_summary_sender',
+            allow_undeclared_parameters=True,
+            automatically_declare_parameters_from_overrides=True
+        )
 
-        self.declare_parameter('robot_id', 'cpsl_uav_1')  # set per robot
         self.robot_id = self.get_parameter('robot_id').value
 
         self.topic_name = f'/{self.robot_id}/execution_summary'
-        self.target_ips = ['10.197.117.67']  # ✅ central planner IP(s)
+        self.target_ips = self.get_parameter('target_ip').value
         self.port = 9005
 
         qos_profile = QoSProfile(

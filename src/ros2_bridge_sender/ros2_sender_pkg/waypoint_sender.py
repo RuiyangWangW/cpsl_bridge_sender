@@ -10,12 +10,16 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
 class WaypointsSender(Node):
     def __init__(self):
-        super().__init__('waypoints_tcp_sender')
-
-        self.robot_id_to_ip = {
-            'cpsl_uav_1': '10.197.117.67',
-            'cpsl_robot_dog_1': '10.197.10.145',
-        }
+        super().__init__(
+            'waypoint_sender',
+            allow_undeclared_parameters=True,
+            automatically_declare_parameters_from_overrides=True
+        )
+        self.robot_id_to_ip = {}
+        for param_name, param in self._parameters.items():
+            if param_name.startswith('robot_id_to_ip.'):
+                key = param_name.replace('robot_id_to_ip.', '')
+                self.robot_id_to_ip[key] = param.value
 
         self.port = 9004  # Different from MapSender port
         self.topic_suffix = '/planned_waypoints'

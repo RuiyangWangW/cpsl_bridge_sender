@@ -9,11 +9,14 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
 class LaserSender(Node):
     def __init__(self):
-        super().__init__('laser_tcp_sender')
-
+        super().__init__(
+            'laser_sender',
+            allow_undeclared_parameters=True,
+            automatically_declare_parameters_from_overrides=True
+        )
         # Set the topic you want to send
-        self.topic_name = '/livox/scan_best_effort'
-        
+        self.topic_name = self.get_parameter('topic_name').value
+        self.target_ip = self.get_parameter('target_ip').value
         qos_profile = QoSProfile(
             reliability=ReliabilityPolicy.BEST_EFFORT,  # Match receiver QoS if needed
             history=HistoryPolicy.KEEP_LAST,
@@ -30,8 +33,8 @@ class LaserSender(Node):
 
         # Connect to the receiver (replace IP if needed)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(('192.168.0.64', 9001))  # Replace with receiver IP
-        self.get_logger().info(f"Connected to receiver at 192.168.0.64:9001")
+        self.sock.connect((self.target_ip, 9001))  # Replace with receiver IP
+        self.get_logger().info(f"Connected to receiver at {self.target_ip}:9001")
 
     def laser_callback(self, msg):
         try:

@@ -10,12 +10,15 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
 class MapSender(Node):
     def __init__(self):
-        super().__init__('map_tcp_sender')
+        super().__init__(
+            'map_sender',
+            allow_undeclared_parameters=True,
+            automatically_declare_parameters_from_overrides=True
+        )
 
         self.topic_name = '/map'
-        self.target_ips = ['192.168.0.101', '192.168.0.102']  # 🔁 Replace with your IP list
         self.port = 9003
-
+        self.target_ips = self.get_parameter('target_ips').value
         qos_profile = QoSProfile(
             reliability=ReliabilityPolicy.RELIABLE,
             history=HistoryPolicy.KEEP_LAST,
