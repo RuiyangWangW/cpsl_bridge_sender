@@ -17,6 +17,12 @@ class LaserSender(Node):
         # Set the topic you want to send
         self.topic_name = self.get_parameter('topic_name').value
         self.target_ip = self.get_parameter('target_ip').value
+        self.robot_id = self.get_parameter('value').value
+
+        self.robot_id = self.get_parameter('robot_id').value              # Used to remap topic
+
+        # Topic to send over TCP
+        self.send_topic = f"/{self.robot_id}/scan"
         qos_profile = QoSProfile(
             reliability=ReliabilityPolicy.BEST_EFFORT,  # Match receiver QoS if needed
             history=HistoryPolicy.KEEP_LAST,
@@ -39,7 +45,7 @@ class LaserSender(Node):
     def laser_callback(self, msg):
         try:
             msg_bytes = serialize_message(msg)
-            topic_bytes = self.topic_name.encode('utf-8')
+            topic_bytes = self.send_topic.encode('utf-8')
 
             # Format:
             # [topic_len][topic_name][msg_len][serialized msg]
