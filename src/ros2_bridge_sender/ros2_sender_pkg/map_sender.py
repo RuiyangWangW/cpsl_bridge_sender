@@ -5,7 +5,7 @@ import socket
 import struct
 import threading
 from rclpy.serialization import serialize_message
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
+from rclpy.qos import QoSProfile, DurabilityPolicy, ReliabilityPolicy, HistoryPolicy
 
 
 class MapSender(Node):
@@ -21,6 +21,7 @@ class MapSender(Node):
         self.target_ips = self.get_parameter('target_ips').value
         qos_profile = QoSProfile(
             reliability=ReliabilityPolicy.RELIABLE,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
             history=HistoryPolicy.KEEP_LAST,
             depth=1
         )
