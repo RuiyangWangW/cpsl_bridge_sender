@@ -26,12 +26,12 @@ Please make sure the IP addresses, robot_ids and etc. are matched in the yaml fi
 ## Usage
 Launch for the Center Computer
 ```bash
-ros2 ros2_sender_pkg launch center_sender.launch
+ros2 launch ros2_sender_pkg center_sender.launch
 ````
 Make sure you have the receiver package running on every robot you want to connect before running the center sender.
 
 Launch for the Individual Robot
 ```bash
-ros2 ros2_sender_pkg launch robot_sender.launch
+ros2 launch ros2_sender_pkg robot_sender.launch
 ````
 Make sure you have the receiver package running on the center computer you want to connect before running the robot sender.
