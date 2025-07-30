@@ -82,7 +82,6 @@ class TfSender(Node):
                         t.header.frame_id = replace['frame_id']
                     if 'child_frame_id' in replace:
                         t.child_frame_id = replace['child_frame_id']
-
                     group_by_dest[dest].append(t)
 
             for dest, transform_list in group_by_dest.items():
