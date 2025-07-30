@@ -15,7 +15,7 @@ cpsl_bridge_sender/
 │   ├── tf_sender.py
 │   ├── waypoint_sender.py
 │   ├── exec_summary_sender.py
-│   ├── scan.py
+│   ├── scan_sender.py
 ├── package.xml
 └── README.md
 ```
