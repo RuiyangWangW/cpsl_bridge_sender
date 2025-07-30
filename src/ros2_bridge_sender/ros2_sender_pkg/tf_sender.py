@@ -5,7 +5,7 @@ from rclpy.serialization import serialize_message
 import socket
 import struct
 from collections import defaultdict
-
+import ast
 
 class TfSender(Node):
     def __init__(self):
@@ -17,20 +17,24 @@ class TfSender(Node):
         self.pair_to_ip = {}
         for param_name, param in self._parameters.items():
             if param_name.startswith('pair_to_ip.'):
-                key = param_name.replace('pair_to_ip.', '')
-                self.pair_to_ip[key] = param.value
+                key_str = param_name.replace('pair_to_ip.', '')
+                key_tuple = tuple(ast.literal_eval(key_str))
+                if key_tuple:
+                    self.pair_to_ip[key_tuple] = param.value
 
         self.pair_to_replace = {}
         for param_name, param in self._parameters.items():
             if param_name.startswith('pair_to_replace.'):
-                key = param_name.replace('pair_to_replace.', '')
-                if key not in self.pair_to_replace:
-                    self.pair_to_replace[key] = {}
-                if 'frame_id' in param_name:
-                    self.pair_to_replace[key]['frame_id'] = param.value
-                elif 'child_frame_id' in param_name:
-                    self.pair_to_replace[key]['child_frame_id'] = param.value
+                parts = param_name.replace('pair_to_replace.', '').split('.')
+                key_str = parts[0]
+                subkey = parts[1] if len(parts) > 1 else None
 
+                key_tuple = tuple(ast.literal_eval(key_str))
+                if key_tuple and subkey:
+                    if key_tuple not in self.pair_to_replace:
+                        self.pair_to_replace[key_tuple] = {}
+                    self.pair_to_replace[key_tuple][subkey] = param.value
+        
         self.port=9002
         self.sockets = {}
         self.connect_sockets()
@@ -66,7 +70,7 @@ class TfSender(Node):
         try:
             # Group transforms by destination (ip, port)
             group_by_dest = defaultdict(list)
-
+            
             for t in msg.transforms:
                 key = (t.header.frame_id, t.child_frame_id)
                 if key in self.pair_to_ip:
@@ -86,7 +90,7 @@ class TfSender(Node):
                 data = serialize_message(filtered_msg)
                 header = struct.pack('>I', len(data))
 
-                sock = self.sockets.get(dest)
+                sock = self.sockets.get((dest, self.port)) 
                 if sock:
                     try:
                         sock.sendall(header + data)
