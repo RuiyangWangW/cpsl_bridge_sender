@@ -19,7 +19,7 @@ class ExecutionSummarySender(Node):
         self.robot_id = self.get_parameter('robot_id').value
 
         self.topic_name = f'/{self.robot_id}/execution_summary'
-        self.target_ips = self.get_parameter('target_ip').value
+        self.target_ip = self.get_parameter('target_ip').value
         self.port = 9005
 
         qos_profile = QoSProfile(
@@ -40,14 +40,13 @@ class ExecutionSummarySender(Node):
         self.connect_to_all_receivers()
 
     def connect_to_all_receivers(self):
-        for ip in self.target_ips:
-            try:
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.connect((ip, self.port))
-                self.sockets[ip] = sock
-                self.get_logger().info(f"Connected to receiver at {ip}:{self.port}")
-            except Exception as e:
-                self.get_logger().error(f"Failed to connect to {ip}:{self.port} - {e}")
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((self.target_ip, self.port))
+            self.sockets[self.target_ip] = sock
+            self.get_logger().info(f"Connected to receiver at {self.target_ip}:{self.port}")
+        except Exception as e:
+            self.get_logger().error(f"Failed to connect to {self.target_ip}:{self.port} - {e}")
 
     def callback(self, msg):
         try:

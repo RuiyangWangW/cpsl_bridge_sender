@@ -17,8 +17,6 @@ class LaserSender(Node):
         # Set the topic you want to send
         self.topic_name = self.get_parameter('topic_name').value
         self.target_ip = self.get_parameter('target_ip').value
-        self.robot_id = self.get_parameter('value').value
-
         self.robot_id = self.get_parameter('robot_id').value              # Used to remap topic
 
         # Topic to send over TCP
