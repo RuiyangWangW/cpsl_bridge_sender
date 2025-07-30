@@ -20,6 +20,9 @@ cpsl_bridge_sender/
 └── README.md
 ```
 
+## Configurations
+Please make sure the IP addresses, robot_ids and etc. are matched in the yaml files.
+
 ## Usage
 Launch for the Center Computer
 ```bash
