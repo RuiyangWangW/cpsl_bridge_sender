@@ -42,6 +42,7 @@ class LaserSender(Node):
 
     def laser_callback(self, msg):
         try:
+            msg.header.frame_id = f"{self.robot_id}/base_link"
             msg_bytes = serialize_message(msg)
             topic_bytes = self.send_topic.encode('utf-8')
 
